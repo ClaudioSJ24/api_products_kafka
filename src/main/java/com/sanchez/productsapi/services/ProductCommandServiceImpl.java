@@ -33,11 +33,40 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     @Override
     public Reply<?> sendCreateCommandAndAwait(ProductDto productDto, Duration duration) {
         Commands<ProductDto> cmd = new Commands<>("CREATE", null, productDto);
+        return sendAndAwait(duration, cmd);
+    }
+
+    @Override
+    public Reply<?> sendUpdateCommandAndAwait(ProductDto productDto, Long id, Duration duration) {
+        Commands<ProductDto> cmd = new Commands<>("UPDATE", id, productDto);
+        return sendAndAwait(duration, cmd);
+    }
+
+    @Override
+    public Reply<?> sendDeleteCommandAndAwait(Long id, Duration duration) {
+        Commands<ProductDto> cmd = new Commands<>("DELETE", id, null);
+        return sendAndAwait(duration, cmd);
+    }
+
+    @Override
+    public Reply<?> sendGetCommandAndAwait(Long id, Duration duration) {
+        
+        Commands<ProductDto> cmd = new Commands<>("READ", id, null);
+        return sendAndAwait(duration, cmd);
+    }
+
+    @Override
+    public Reply<?> sendGetAllCommandAndAwait(Duration duration) {
+        Commands<ProductDto> cmd = new Commands<>("READ_ALL", null, null);
+        return sendAndAwait(duration, cmd);
+    }
+
+    private Reply<?> sendAndAwait(Duration duration, Commands<ProductDto> cmd) {
         String correlationId = UUID.randomUUID().toString();
         logger.info("API products Client creating product with correlationId={} ", correlationId);
-         Message<Commands<ProductDto>> message = MessageBuilder.withPayload(cmd)
+        Message<Commands<ProductDto>> message = MessageBuilder.withPayload(cmd)
                 .setHeader("correlationId", correlationId)
-                 .build();
+                .build();
 
         CompletableFuture<Reply<?>> future = replayInbox.register(correlationId);
 

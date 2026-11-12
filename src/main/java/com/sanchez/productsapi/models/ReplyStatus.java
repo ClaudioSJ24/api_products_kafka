@@ -1,4 +1,10 @@
 package com.sanchez.productsapi.models;
 
-public class ReplyStatus {
+public enum ReplyStatus {
+    SUCCESS,
+    ERROR;
+
+    public boolean isSuccess() {
+        return this == SUCCESS;
+    }
 }

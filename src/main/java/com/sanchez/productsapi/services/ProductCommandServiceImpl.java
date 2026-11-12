@@ -1,6 +1,7 @@
 package com.sanchez.productsapi.services;
 
 import com.sanchez.productsapi.messaging.ReplayInbox;
+import com.sanchez.productsapi.models.CommandType;
 import com.sanchez.productsapi.models.Commands;
 import com.sanchez.productsapi.models.Reply;
 import com.sanchez.productsapi.models.dto.ProductDto;
@@ -32,33 +33,29 @@ public class ProductCommandServiceImpl implements ProductCommandService {
 
     @Override
     public Reply<?> sendCreateCommandAndAwait(ProductDto productDto, Duration duration) {
-        Commands<ProductDto> cmd = new Commands<>("CREATE", null, productDto);
-        return sendAndAwait(duration, cmd);
+       return sendAndAwait(duration, new Commands<>(CommandType.CREATE, null, productDto));
     }
 
     @Override
     public Reply<?> sendUpdateCommandAndAwait(ProductDto productDto, Long id, Duration duration) {
-        Commands<ProductDto> cmd = new Commands<>("UPDATE", id, productDto);
+        Commands<ProductDto> cmd = new Commands<>(CommandType.UPDATE, id, productDto);
         return sendAndAwait(duration, cmd);
     }
 
     @Override
     public Reply<?> sendDeleteCommandAndAwait(Long id, Duration duration) {
-        Commands<ProductDto> cmd = new Commands<>("DELETE", id, null);
-        return sendAndAwait(duration, cmd);
+        return sendAndAwait(duration, new Commands<>(CommandType.DELETE, id, null));
     }
 
     @Override
     public Reply<?> sendGetCommandAndAwait(Long id, Duration duration) {
-        
-        Commands<ProductDto> cmd = new Commands<>("READ", id, null);
+        Commands<ProductDto> cmd = new Commands<>(CommandType.READ, id, null);
         return sendAndAwait(duration, cmd);
     }
 
     @Override
     public Reply<?> sendGetAllCommandAndAwait(Duration duration) {
-        Commands<ProductDto> cmd = new Commands<>("READ_ALL", null, null);
-        return sendAndAwait(duration, cmd);
+        return sendAndAwait(duration, new Commands<>(CommandType.READ_ALL, null, null));
     }
 
     private Reply<?> sendAndAwait(Duration duration, Commands<ProductDto> cmd) {

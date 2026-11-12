@@ -1,6 +1,7 @@
 package com.sanchez.productsapi.controllers;
 
 import com.sanchez.productsapi.models.Reply;
+import com.sanchez.productsapi.models.ReplyStatus;
 import com.sanchez.productsapi.models.dto.ProductDto;
 import com.sanchez.productsapi.services.ProductCommandService;
 import jakarta.validation.Valid;
@@ -29,8 +30,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Long id){
-        Reply<?> reply = this.productCommandService.sendGetCommandAndAwait(id, Duration.ofSeconds(5));
-        return getResponseEntity(reply);
+       return getResponseEntity(this.productCommandService.sendGetCommandAndAwait(id, Duration.ofSeconds(5)));
     }
 
     @GetMapping
@@ -41,8 +41,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductDto productDto){
-        Reply<?> reply = this.productCommandService.sendUpdateCommandAndAwait(productDto, id, Duration.ofSeconds(5));
-        return getResponseEntity(reply);
+         return getResponseEntity(this.productCommandService.sendUpdateCommandAndAwait(productDto, id, Duration.ofSeconds(5)));
     }
 
     @DeleteMapping("/{id}")
@@ -51,7 +50,7 @@ public class ProductController {
         return getResponseEntity(reply);
     }
     private static @NonNull ResponseEntity<?> getResponseEntity(Reply<?> reply) {
-        if ("SUCCESS".equalsIgnoreCase(reply.status())) {
+        if ( reply.status().isSuccess()) {
             return ResponseEntity.ok(reply.body());
         }
         return ResponseEntity.badRequest().body(Map.of("ERROR", reply.message()));
